@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="大恒工业相机采集项目：Galaxy SDK 环境配置、OpenCV、rm_log 日志与原始运行记录。">
+  <meta name="theme-color" content="#18362f">
+  <title>Camera · 大恒工业相机采集</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <header><a class="brand" href="#main">◎ CAMERA <small>/ PROJECT NOTES</small></a><nav aria-label="页面导航"><a href="#setup">配置运行</a><a href="#pipeline">采集流程</a><a href="#logs">运行日志</a><a href="https://github.com/chaorenqiang119/camera">GitHub ↗</a></nav></header>
+  <main id="main">
+    <section class="hero">
+      <div><p class="eyebrow">● GALAXY C API · OPENCV · RM_LOG</p><h1>大恒工业相机<br><span>采集与日志。</span></h1><p class="intro">从设备枚举到帧缓存归还，用统一日志记录每一步。支持 USB3 / GigE 相机、实时画面、键盘调参与无窗口采集。</p><div class="actions"><a class="button primary" href="#setup">查看配置与运行 ↓</a><a class="button secondary" href="https://github.com/chaorenqiang119/camera">浏览源代码 ↗</a></div></div>
+      <aside class="overview" aria-label="项目概览"><div class="overview-title">ACQUISITION / 01 <span>+</span></div><div class="sensor" aria-hidden="true"><div class="sensor-frame"><div class="sensor-center"></div></div><span>FRAME → IMAGE → LOG</span></div><dl><div><dt>设备接口</dt><dd>USB3 / GigE</dd></div><div><dt>像素格式</dt><dd>BayerRG8 / Mono8</dd></div><div><dt>采集模式</dt><dd>Continuous · 5 buffers</dd></div></dl></aside>
+    </section>
+    <div class="status"><span>● Linux CI 已通过</span><span>● Windows 核心 CI 已通过</span><span>28 项模拟采集 + 3 项命令行检查</span></div>
+
+    <section id="setup" class="section">
+      <p class="eyebrow">01 / QUICK START</p><h2>配置，然后采集。</h2><p>在连接相机的电脑上安装 Galaxy SDK 和 OpenCV，再构建项目。</p>
+      <div class="setup-grid"><div><h3>环境依赖</h3><dl class="requirements"><div><dt>语言与构建</dt><dd>C++17 · CMake 3.16+</dd></div><div><dt>相机驱动</dt><dd>大恒 Galaxy SDK</dd></div><div><dt>图像显示</dt><dd>OpenCV core / imgproc / highgui</dd></div><div><dt>日志封装</dt><dd>rm_log / spdlog / fmt 已包含</dd></div></dl><a class="link" href="https://en.daheng-imaging.com/list-59-1.html">下载官方 SDK ↗</a><a class="link" href="https://github.com/chaorenqiang119/camera/blob/main/docs/SETUP.md">完整配置与实体相机验收步骤 ↗</a><p class="note">SDK 头文件、库和驱动使用官方安装包。运行前关闭占用设备的 GalaxyView。</p></div>
+      <div class="terminal"><div class="toolbar"><div role="tablist" aria-label="运行平台"><button id="linux-tab" role="tab" aria-selected="true" aria-controls="linux-panel" data-platform="linux">Ubuntu</button><button id="windows-tab" role="tab" aria-selected="false" aria-controls="windows-panel" tabindex="-1" data-platform="windows">Windows</button></div><button id="copy-command" type="button">复制命令</button></div>
+      <div id="linux-panel" role="tabpanel" aria-labelledby="linux-tab"><pre><code id="linux-command">git clone https://github.com/chaorenqiang119/camera.git
+cd camera
+
+# 先安装官方 Galaxy SDK，再安装构建依赖
+sudo apt-get update
+sudo apt-get install -y build-essential cmake libopencv-dev
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel 2
+./build/camera_demo --no-display --frames 100</code></pre></div>
+      <div id="windows-panel" role="tabpanel" aria-labelledby="windows-tab" hidden><pre><code id="windows-command">git clone https://github.com/chaorenqiang119/camera.git
+cd camera
+
+# 在 Visual Studio x64 环境中运行，按安装位置修改路径
+cmake -S . -B build -A x64 `
+  -DGXIAPI_INCLUDE_DIR="C:/path/to/sdk/include" `
+  -DGXIAPI_LIBRARY="C:/path/to/sdk/GxIAPI.lib" `
+  -DDXIMAGEPROC_LIBRARY="C:/path/to/sdk/DxImageProc.lib" `
+  -DOpenCV_DIR="C:/path/to/opencv/build"
+cmake --build build --config Debug --parallel 2
+.\build\Debug\camera_demo.exe --no-display --frames 100</code></pre></div>
+      <div class="terminal-foot">默认显示画面 · ESC / Ctrl+C 退出 · --frames 0 持续采集</div><p id="copy-status" class="sr-only" role="status"></p></div></div>
+    </section>
+
+    <section id="pipeline" class="section"><p class="eyebrow">02 / ACQUISITION PIPELINE</p><h2>一帧图像的完整路径。</h2><ol class="pipeline"><li><span>01</span><h3>初始化与枚举</h3><p>初始化 SDK，保留原始设备序号，选择支持的相机。</p><code>GXInitLib / GXOpenDeviceByIndex</code></li><li><span>02</span><h3>配置与开流</h3><p>连续采集、关闭触发，设置像素格式与 5 个缓存。</p><code>GXStreamOn</code></li><li><span>03</span><h3>取帧与转换</h3><p>检查帧状态和大小，转换 Bayer 图像或复制 Mono8。</p><code>GXDQBuf / DxRaw8toRGB24Ex</code></li><li><span>04</span><h3>归还与释放</h3><p>显示前归还帧；退出时停流、关设备并关闭 SDK。</p><code>GXQBuf / GXStreamOff</code></li></ol>
+    <div class="details-grid"><article><h3>统一的 rm_log 输出</h3><p>时间、等级、线程、源文件、函数和行号，贯穿配置、FPS、超时与退出。异步队列容量 4096，单文件上限 5 MiB，保留 3 个轮转文件。</p><pre><code>RM_LOG_INFO("Opened camera, SDK index={}", index);
+RM_LOG_DEBUG("FPS={:.2f}", fps);
+RM_LOG_ERROR("{} failed: status={}", op, status);</code></pre></article><article><h3>运行时调参</h3><dl class="keys"><div><dt><kbd>e</kbd> / <kbd>d</kbd></dt><dd>曝光 ±25 μs</dd></div><div><dt><kbd>a</kbd> / <kbd>q</kbd></dt><dd>增益 ±0.1</dd></div><div><dt><kbd>s</kbd> / <kbd>w</kbd></dt><dd>Gamma ±0.1</dd></div><div><dt><kbd>ESC</kbd></dt><dd>停止采集，释放资源</dd></div></dl><p class="note">参数按节点范围和步长限幅，不支持的可选节点记录 WARN。</p></article></div></section>
+
+    <section id="logs" class="section"><p class="eyebrow">03 / RUN ARCHIVE</p><h2>原始运行记录。</h2><p>2026 年 10 月 4 日，来自整理前项目的 daheng.log，原始内容完整保留。</p><div class="runs"><article><span class="badge failed">未发现设备</span><h3>16:38:59</h3><p>发现 0 台相机，记录连接或权限错误。</p><small>退出码 <strong>1</strong></small></article><article><span class="badge passed">正常结束</span><h3>16:59:00</h3><p>发现并打开 1 台设备，配置完成并采集 1 帧。</p><small>退出码 <strong>0</strong></small></article><article><span class="badge passed">正常结束</span><h3>17:00:55</h3><p>发现并打开 1 台设备，配置完成并采集 1 帧。</p><small>退出码 <strong>0</strong></small></article></div><details class="log-details"><summary>查看原始日志 <span aria-hidden="true">+</span></summary><pre id="log-content" aria-live="polite">正在读取归档日志…</pre></details><div class="actions"><a class="link" href="./logs/daheng-2026-10-04.log" download>下载原始日志 ↓</a><a class="link" href="https://github.com/chaorenqiang119/camera/blob/main/docs/logs/README.md">查看来源说明 ↗</a></div><p class="note">这些是原项目已有记录，行号对应整理前代码。本次整理后代码仍需在连接相机的环境验收。</p></section>
+
+    <section class="validation" id="validation"><div><p class="eyebrow">04 / VALIDATION</p><h2>可复现的验证。</h2><p>Linux 使用真实 OpenCV 与独立模拟 SDK，Windows 检查日志和参数解析。覆盖正常采集、设备选择、超时、坏帧及异常资源释放。</p><a class="link" href="https://github.com/chaorenqiang119/camera/actions/runs/37199238347">已通过的 CI 记录 ↗</a><a class="link" href="https://github.com/chaorenqiang119/camera/blob/main/docs/VALIDATION.md">完整验证范围 ↗</a></div><aside><h3>实体相机验收</h3><p>模拟检查验证控制流程；实际 SDK 兼容性、画面色彩、窗口显示和键盘调参，需要连接相机后按配置文档验收。</p><code>./build/camera_demo --no-display --frames 100</code></aside></section>
+  </main>
+  <footer><a class="brand" href="#main">◎ CAMERA</a><span>Galaxy SDK · OpenCV · rm_log</span><a href="https://github.com/chaorenqiang119/camera">chaorenqiang119 / camera ↗</a></footer>
+</body>
+</html>

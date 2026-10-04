@@ -6,6 +6,8 @@
 
 原项目已有的相机运行日志已归档到 [docs/logs](docs/logs/README.md)，保留无设备失败及两次采集 1 帧后正常退出的原始记录。
 
+GitHub Pages 地址：<https://chaorenqiang119.github.io/camera/>（首次启用 Pages 并部署成功后生效）。页面包含配置命令、采集流程、验证记录与原始日志下载；相机程序需要在连接设备的本地电脑上运行。Pages 使用 `.github/workflows/pages.yml` 自动发布，网页源码位于 `site/`，首次启用与本地预览见 [PAGES.md](docs/PAGES.md)。
+
 ## 项目结构
 
 ```text
