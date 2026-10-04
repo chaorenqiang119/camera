@@ -18,6 +18,7 @@
 - Windows / MinGW GCC 13.1.0：`CAMERA_BUILD_DEMO=OFF` 的 CMake 配置、构建成功；CTest 的 `logging_and_options` 通过，0 项失败。
 - `tests/mock_sdk.cpp` 使用原厂 SDK 头文件独立编译成功；SDK 的 `GXDef.h` 第 173 行有原始 `typedef was ignored` 警告，未修改厂商文件。
 - Python 模拟测试脚本语法编译通过；应用源码未使用 `printf`、`std::cout`、`std::cerr` 或直接 spdlog 等级 API 输出调试信息。
-- 本地未执行完整采集测试，完整模拟采集交由仓库 Linux CI 执行；其状态以 [GitHub Actions](https://github.com/chaorenqiang119/camera/actions) 的实际结果为准。
+- Linux GitHub CI（Ubuntu 24.04、GCC 13.3.0、真实 OpenCV 4.6.0）：应用完整构建成功，`logging_and_options` 和 `mock_acquisition` 均通过，0 项失败。28 项采集场景及 3 项命令行场景通过。执行记录：[CI run 37198935173](https://github.com/chaorenqiang119/camera/actions/runs/37198935173/job/111426445697)。
+- 首轮 Windows CI 在 MSVC 14.51 上暴露内置旧 fmt 对已删除的 `stdext::checked_array_iterator` 的引用，已采用原有可移植指针实现修正；修正后的 Windows 验证以 [GitHub Actions](https://github.com/chaorenqiang119/camera/actions) 的实际结果为准。
 
 模拟结果始终不等价于实体相机通过。
