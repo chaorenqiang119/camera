@@ -11,17 +11,16 @@ camera/
 ├── CMakeLists.txt             # SDK / OpenCV 查找与构建
 ├── src/main.cpp              # 初始化、枚举、配置、采集、调参和资源释放
 ├── include/options.h         # 运行参数解析
-├── include/sdk/              # 原项目附带的 Galaxy 厂商头文件
 ├── util/rm_log/              # 现有日志封装及初始化失败兜底
 ├── util/spdlog/              # 原项目附带的 spdlog 1.12.0 / fmt
-├── tests/                    # 日志、参数与模拟 SDK 的异常路径测试
+├── tests/                    # 日志、参数、独立模拟接口及异常路径测试
 ├── docs/                     # 环境复现、验收与验证记录
 └── .github/workflows/ci.yml  # Linux 模拟采集与 Windows 核心检查
 ```
 
 ## 配置与运行
 
-推荐先在原项目使用的 Ubuntu 环境复现。需要 C++17、CMake 3.16+、OpenCV（core / imgproc / highgui）和安装好的大恒 Galaxy SDK。`rm_log`、spdlog 和 fmt 已包含在仓库中。厂商 SDK 动态库和相机驱动需另行安装，下载入口与 Windows 配置见 [SETUP.md](docs/SETUP.md)。
+推荐先在原项目使用的 Ubuntu 环境复现。需要 C++17、CMake 3.16+、OpenCV（core / imgproc / highgui）和安装好的大恒 Galaxy SDK。`rm_log`、spdlog 和 fmt 已包含在仓库中。厂商 SDK 头文件、动态库和相机驱动需从官方安装包获取，下载入口与 Windows 配置见 [SETUP.md](docs/SETUP.md)。
 
 ```bash
 git clone https://github.com/chaorenqiang119/camera.git
@@ -110,6 +109,6 @@ cmake --build build-mock --parallel 2
 ctest --test-dir build-mock --output-on-failure
 ```
 
-模拟模式会在配置和运行时明确警告，默认关闭。模拟测试不能证明实体相机、厂商动态库、颜色转换或 GUI 调参已经通过验收；真实运行使用独立的 `build` 目录和 `CAMERA_USE_MOCK_SDK=OFF`。
+模拟模式会在配置和运行时明确警告，默认关闭。测试接口的结构和常量是独立简化定义，不是厂商 SDK 的 ABI。模拟测试不能证明实体相机、厂商动态库、颜色转换或 GUI 调参已经通过验收；真实运行使用独立的 `build` 目录和 `CAMERA_USE_MOCK_SDK=OFF`。
 
 第三方来源与许可说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

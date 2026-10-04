@@ -1,0 +1,30 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux-mock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OpenCV
+        run: sudo apt-get update && sudo apt-get install -y libopencv-dev ninja-build
+      - name: Configure with simulated SDK
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCAMERA_USE_MOCK_SDK=ON
+      - name: Build
+        run: cmake --build build --parallel 2
+      - name: Verify logging and acquisition failure handling
+        run: ctest --test-dir build --output-on-failure
+  windows-core:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure without camera dependencies
+        run: cmake -S . -B build -DCAMERA_BUILD_DEMO=OFF
+      - name: Build
+        run: cmake --build build --config Debug --parallel 2
+      - name: Verify logging and command-line options
+        run: ctest --test-dir build -C Debug --output-on-failure

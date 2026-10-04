@@ -1,0 +1,20 @@
+/build*/
+/cmake-build*/
+/.idea/
+/.vscode/
+/logs/
+*.log
+__pycache__/
+*.pyc
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.so.*
+*.a
+*.lib
+*.pdb
+/.publish/
+# Vendor SDK stays local; install the official SDK to build for hardware.
+/include/sdk/
