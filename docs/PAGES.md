@@ -1,6 +1,8 @@
 # GitHub Pages 项目展示页
 
-访问地址：<https://chaorenqiang119.github.io/camera/>。该地址在 Pages 首次成功部署后生效。
+访问地址：<https://chaorenqiang119.github.io/camera/>，已于 2026-10-04 成功发布。
+
+部署记录：[Deploy project website](https://github.com/chaorenqiang119/camera/actions/runs/37201877929)。已检查首页、CSS、JavaScript、favicon 和原始日志下载均返回 HTTP 200，线上静态资源与本地发布目录内容一致，日志保留原始字节。
 
 网页源码位于 `site/`，展示配置命令、采集流程、验证结果及已公开的原始日志。`scripts/build_site.py` 仅打包网页静态文件和归档日志到忽略的 `build-pages/`，不发布 SDK、构建缓存或相机程序。
 
