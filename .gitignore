@@ -4,6 +4,7 @@
 /.vscode/
 /logs/
 *.log
+!/docs/logs/*.log
 __pycache__/
 *.pyc
 *.o

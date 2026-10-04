@@ -1,0 +1,18 @@
+[2026-10-04 16:38:59.976] [info] [thread 126498] [main.cpp main:75] Program started
+[2026-10-04 16:39:01.119] [info] [thread 126498] [main.cpp main:82] Found 0 camera(s)
+[2026-10-04 16:39:01.119] [error] [thread 126498] [main.cpp main:197] Program stopped: No camera found: check connection and permissions
+[2026-10-04 16:39:01.122] [info] [thread 126498] [main.cpp main:210] Program exit code=1
+[2026-10-04 16:59:00.006] [info] [thread 7406] [main.cpp main:75] Program started
+[2026-10-04 16:59:01.152] [info] [thread 7406] [main.cpp main:82] Found 1 camera(s)
+[2026-10-04 16:59:01.931] [info] [thread 7406] [main.cpp main:95] Opened camera, SDK index=1
+[2026-10-04 16:59:01.952] [debug] [thread 7406] [main.cpp main:113] Configuration complete: continuous acquisition, trigger off, 5 buffers
+[2026-10-04 16:59:01.967] [info] [thread 7406] [main.cpp main:118] Streaming started; e/d exposure, a/q gain, s/w gamma, ESC exit
+[2026-10-04 16:59:02.042] [info] [thread 7406] [main.cpp main:195] Acquisition finished, total frames=1
+[2026-10-04 16:59:02.205] [info] [thread 7406] [main.cpp main:210] Program exit code=0
+[2026-10-04 17:00:55.507] [info] [thread 7606] [main.cpp main:75] Program started
+[2026-10-04 17:00:56.644] [info] [thread 7606] [main.cpp main:82] Found 1 camera(s)
+[2026-10-04 17:00:57.422] [info] [thread 7606] [main.cpp main:95] Opened camera, SDK index=1
+[2026-10-04 17:00:57.441] [debug] [thread 7606] [main.cpp main:113] Configuration complete: continuous acquisition, trigger off, 5 buffers
+[2026-10-04 17:00:57.456] [info] [thread 7606] [main.cpp main:118] Streaming started; e/d exposure, a/q gain, s/w gamma, ESC exit
+[2026-10-04 17:00:57.526] [info] [thread 7606] [main.cpp main:195] Acquisition finished, total frames=1
+[2026-10-04 17:00:57.697] [info] [thread 7606] [main.cpp main:210] Program exit code=0

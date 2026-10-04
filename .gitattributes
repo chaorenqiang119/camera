@@ -6,3 +6,5 @@
 *.py text eol=lf
 *.yml text eol=lf
 CMakeLists.txt text eol=lf
+# Keep archived run logs byte for byte, including original line endings.
+docs/logs/*.log -text -diff
